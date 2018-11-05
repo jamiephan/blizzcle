@@ -1,10 +1,10 @@
 #!/usr/bin/env node
-const BlizzBlog = require('./index');
+const Blizzcle = require('./index');
 const program = require('commander');
 
 program
   .version(require('../package.json').version)
-  .name('blizzblog')
+  .name('blizzcle')
   .description('A command line interface tool to gather articles from Blizzard!')
   .option('-v, --verbose', 'Show Verbose message')
   .option('-s, --stdout', 'Output the result to STDOUT instead. (Will ignore -o.)')
@@ -21,7 +21,7 @@ if (!program.output && !program.stdout) {
   program.help();
 }
 
-const Blog = new blogAPI({
+const blizzcle = new Blizzcle({
   verbose: program.verbose,
   maxCount: program.maxCount,
   filename: program.output,
@@ -30,11 +30,13 @@ const Blog = new blogAPI({
 });
 
 if (!program.stdout) {
-  Blog.saveJSON()
+  blizzcle
+    .saveJSON()
     .then(console.log)
     .catch(console.error);
 } else {
-  Blog.get()
+  blizzcle
+    .get()
     .then(console.log)
     .catch(console.error);
 }

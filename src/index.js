@@ -3,7 +3,7 @@ const fetch = require('node-fetch');
 const $ = require('cheerio');
 const fs = require('fs');
 
-class BlizzBlogAPI {
+class Blizzcle {
   constructor(options = {}) {
     this.verbose = typeof options.verbose === 'undefined' ? false : options.verbose;
     this.maxCount = typeof options.maxCount === 'undefined' ? 0 : parseInt(options.maxCount);
@@ -152,4 +152,4 @@ class BlizzBlogAPI {
   }
 }
 
-module.exports = BlizzBlogAPI;
+module.exports = Blizzcle;
