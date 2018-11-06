@@ -56,8 +56,8 @@ class Blizzcle {
       } Article Viewer</a><ul class=navbar-nav><a class=nav-link href=https://www.reddit.com/u/jamiephan>(by /u/jamiephan)</a></ul></nav><div class=container id=blogs><div class=row><div class="col s12"><h1>Blogs</h1></div></div><div class=row><div class="col s4"><input id=blog-search type=text class="search form-control" placeholder=Search autocomplete=off></div></div><div class=row><div class="col s12"><table class="table table-hover"><thead><tr><th scope=col data-sort=hash data-asc=asc onclick=sort(this)>#</th><th scope=col>Thumbnail</th><th scope=col data-sort=title data-asc=asc onclick=sort(this)>Blog Title</th><th scope=col data-sort=date data-asc=asc onclick=sort(this)>Date (UTC)</th></tr></thead><tbody class=list>`;
       for (let i = 0; i < arr.length; i++) {
         const entry = arr[i];
-        data += `<tr><th scope=row class=hash>${i + 1}</th><td class><img class=lazyload data-src=${entry.thumbnail}
-        src = "https://dummyimage.com/260x130/a1a1a1/2b2b2b.gif" / > < /td><td class=title><a href=${
+        data += `<tr><th scope=row class=hash>${i + 1}</th><td><img class=lazyload data-src=${entry.thumbnail} 
+        src=https://dummyimage.com/260x130/a1a1a1/2b2b2b.gif /></td><td class=title><a href=${
           entry.link
         } target="_blank">${entry.title}</td></a><td class=dateStr>${new Date(
           entry.timestamp
