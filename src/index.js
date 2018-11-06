@@ -6,7 +6,8 @@ const fs = require('fs');
 class Blizzcle {
   constructor(options = {}) {
     this.verbose = typeof options.verbose === 'undefined' ? false : options.verbose;
-    this.maxCount = typeof options.maxCount === 'undefined' ? 0 : parseInt(options.maxCount);
+    this.count = typeof options.count === 'undefined' ? 0 : parseInt(options.count);
+    this.detail = typeof options.detail === 'undefined' ? false : options.detail;
     this.filename = typeof options.filename === 'undefined' ? 'blizz' : options.filename;
     this.game = typeof options.game === 'undefined' ? 'heroes-of-the-storm' : options.game.toLowerCase();
     this.language = typeof options.language === 'undefined' ? 'en-us' : options.language.toLowerCase();
@@ -23,17 +24,57 @@ class Blizzcle {
         .catch(e => {
           reject(e);
         });
-      this.pages = this.maxCount == 0 ? this.pages : this.pages.slice(0, this.maxCount);
+      this.pages = this.count == 0 ? this.pages : this.pages.slice(0, this.count);
+      if (this.detail) {
+        await this._detailtify().catch(reject);
+      }
       resolve(this.pages);
     });
   }
 
-  async saveJSON() {
+  async save(options = {}) {
+    if (typeof options.filename === 'undefined') {
+      throw new Error('filename is not defined');
+    }
+
+    this.type = typeof options.type === 'undefined' ? 'json' : options.type;
+    if (!['json', 'html'].includes(this.type.toLowerCase())) {
+      throw new Error('File type can only be json or html.');
+    }
+
+    const arr = await this.get().catch(e => {
+      throw e;
+    });
+    let data;
+    if (this.type.toLowerCase() === 'json') {
+      data = JSON.stringify(arr);
+    } else {
+      data = `<!doctype html><html lang=en><head><meta charset=utf-8><meta name=viewport content="width=device-width, initial-scale=1, shrink-to-fit=no"><link rel=stylesheet href=https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css integrity=sha384-9gVQ4dYFwwWSjIDZnLEWnxCjeSWFphJiwGPXr1jddIhOegiu1FwO5qRGvFXOdJZ4 crossorigin=anonymous><title>${
+        this.game
+      } Article Viewer</title><style>th{cursor:pointer}img{width:260px;height:130px}</style><script src=https://code.jquery.com/jquery-3.3.1.slim.min.js integrity=sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo crossorigin=anonymous></script><script src=https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.0/umd/popper.min.js integrity=sha384-cs/chFZiN24E4KMATLdqdvsezGxaGsi4hLGOzlXwp5UZB1LY//20VyM2taTB4QvJ crossorigin=anonymous></script><script src=https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/js/bootstrap.min.js integrity=sha384-uefMccjFJAIv6A+rW+L4AHf99KvxDjWSu1z9VI8SKNVmz4sk7buKt/6v9KI65qnm crossorigin=anonymous></script><script src=http://cdnjs.cloudflare.com/ajax/libs/list.js/1.5.0/list.min.js></script><script src=https://cdn.rawgit.com/tuupola/jquery_lazyload/2.x/lazyload.min.js></script></head><body><nav class="navbar navbar-light bg-light justify-content-between"><a class=navbar-brand>${
+        this.game
+      } Article Viewer</a><ul class=navbar-nav><a class=nav-link href=https://www.reddit.com/u/jamiephan>(by /u/jamiephan)</a></ul></nav><div class=container id=blogs><div class=row><div class="col s12"><h1>Blogs</h1></div></div><div class=row><div class="col s4"><input id=blog-search type=text class="search form-control" placeholder=Search autocomplete=off></div></div><div class=row><div class="col s12"><table class="table table-hover"><thead><tr><th scope=col data-sort=hash data-asc=asc onclick=sort(this)>#</th><th scope=col>Thumbnail</th><th scope=col data-sort=title data-asc=asc onclick=sort(this)>Blog Title</th><th scope=col data-sort=date data-asc=asc onclick=sort(this)>Date (UTC)</th></tr></thead><tbody class=list>`;
+      for (let i = 0; i < arr.length; i++) {
+        const entry = arr[i];
+        data += `<tr><th scope=row class=hash>${i + 1}</th><td class><img class=lazyload data-src=${entry.thumbnail}
+        src = "https://dummyimage.com/260x130/a1a1a1/2b2b2b.gif" / > < /td><td class=title><a href=${
+          entry.link
+        } target="_blank">${entry.title}</td></a><td class=dateStr>${new Date(
+          entry.timestamp
+        ).getUTCFullYear()}-${new Date(entry.timestamp).getUTCMonth()}-${new Date(
+          entry.timestamp
+        ).getUTCDate()} ${new Date(entry.timestamp).getUTCHours()} ${new Date(
+          entry.timestamp
+        ).getUTCHours()}:${new Date(entry.timestamp).getUTCHours()}</td><td class=date style=display:none>${
+          entry.timestamp
+        }</td></tr>`;
+      }
+      data += `</tbody></table></div></div></div><script>lazyload();var options={valueNames:["hash","title","date"]};var blogList=new List("blogs",options);function sort(a){blogList.sort(a.dataset.sort,{order:a.dataset.asc});a.dataset.asc=(a.dataset.asc=="asc"?"desc":"asc")};</script></body></html>`;
+    }
     return new Promise(async (resolve, reject) => {
-      const arr = await this.get().catch(reject);
       fs.writeFile(
         this.filename,
-        JSON.stringify(arr),
+        data,
         {
           encoding: 'utf8',
         },
@@ -45,9 +86,17 @@ class Blizzcle {
     });
   }
 
-  _download(pageNumber) {
+  _download(type, data) {
     const domain = 'https://news.blizzard.com';
-    const URL = `${domain}/${this.language}/blog/list?pageNum=${pageNumber}&community=${this.game}`;
+    let param = '';
+    for (var key in data) {
+      if (param != '') {
+        param += '&';
+      }
+      param += key + '=' + encodeURIComponent(data[key]);
+    }
+    const URL = `${domain}/${this.language}/blog/${type}?${param}&__NO_CACHE__=${+new Date()}`;
+    // console.log(URL);
     return fetch(URL)
       .then(r => {
         if (!r.ok) {
@@ -64,7 +113,7 @@ class Blizzcle {
     this.pages = [];
     const promises = [];
     this._log('Downloading Page 1 for metadata and its content.');
-    const page1 = await this._download(1).catch(e => {
+    const page1 = await this._download('list', { pageNum: 1, community: this.game }).catch(e => {
       throw e;
     });
     this.pages.push(...this._parse(page1.html));
@@ -77,8 +126,8 @@ class Blizzcle {
     let articleCount = this.metadata.totalCount;
     this._log(`Community name : ${this.metadata.game}`);
     this._log(`Total article count in "${this.metadata.game}": ${this.metadata.totalCount}`);
-    if (this.maxCount !== 0) {
-      articleCount = this.maxCount;
+    if (this.count !== 0) {
+      articleCount = this.count;
       this._log(`Number of articles will be extracted: ${articleCount}`);
     }
     const pagesToFetch = Math.ceil((articleCount - 30) / 30);
@@ -86,12 +135,15 @@ class Blizzcle {
 
     for (let i = 0; i < pagesToFetch; i++) {
       this._log(`Fetching extra page: ${i + 1} / ${pagesToFetch} ...`);
-      // const json = await this._download(i + 2).catch(e => {
-      //   throw e;
-      // });
-      promises.push(this._download(i + 2));
-      // this.pages.push(this._parse(json.html));
+
+      promises.push(
+        this._download('list', {
+          pageNum: i + 2,
+          community: this.game,
+        })
+      );
     }
+    this._log(`Waiting ${promises.length} request to be completed...`);
     return await Promise.all(promises);
   }
 
@@ -143,6 +195,33 @@ class Blizzcle {
       });
     });
     return json;
+  }
+
+  async _detailtify() {
+    return new Promise(async (resolve, reject) => {
+      this._log('Downloading details to each post');
+      const promises = [];
+      for (let i = 0; i < this.pages.length; i++) {
+        const post = this.pages[i];
+        this._log('Fetching Details of the post ' + post.id + ' (' + post.title + ')');
+        promises.push(this._download('detail', { blogId: post.id, full: false }));
+      }
+      this._log(`Waiting ${promises.length} request to be completed...`);
+      const details = await Promise.all(promises).catch(reject);
+
+      for (let i = 0; i < details.length; i++) {
+        const detail = details[i];
+        const timestampStr = $('article', detail.html)
+          .find('.ArticleDetail-bylineDate')
+          .attr('title');
+        const body = $('article', detail.html).find('.ArticleDetail-content');
+        const timestamp = +new Date(timestampStr);
+        this.pages[i].timestamp = timestamp;
+        this.pages[i].bodyHTML = body.html().trim();
+        this.pages[i].body = body.text().trim();
+      }
+      resolve(true);
+    });
   }
 
   _log(message) {
