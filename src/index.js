@@ -61,13 +61,11 @@ class Blizzcle {
           entry.link
         } target="_blank">${entry.title}</td></a><td class=dateStr>${new Date(
           entry.timestamp
-        ).getUTCFullYear()}-${new Date(entry.timestamp).getUTCMonth()}-${new Date(
-          entry.timestamp
-        ).getUTCDate()} ${new Date(entry.timestamp).getUTCHours()} ${new Date(
-          entry.timestamp
-        ).getUTCHours()}:${new Date(entry.timestamp).getUTCHours()}</td><td class=date style=display:none>${
-          entry.timestamp
-        }</td></tr>`;
+        ).getUTCFullYear()}-${new Date(entry.timestamp).getUTCMonth()}-${new Date(entry.timestamp).getUTCDate()} ${(
+          '0' + new Date(entry.timestamp).getUTCHours()
+        ).slice(-2)}:${('0' + new Date(entry.timestamp).getUTCMinutes()).slice(
+          -2
+        )}</td><td class=date style=display:none>${entry.timestamp}</td></tr>`;
       }
       data += `</tbody></table></div></div></div><script>lazyload();var options={valueNames:["hash","title","date"]};var blogList=new List("blogs",options);function sort(a){blogList.sort(a.dataset.sort,{order:a.dataset.asc});a.dataset.asc=(a.dataset.asc=="asc"?"desc":"asc")};</script></body></html>`;
     }
