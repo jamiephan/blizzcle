@@ -59,9 +59,9 @@ class Blizzcle {
         data += `<tr><th scope=row class=hash>${i + 1}</th><td><img class=lazyload data-src=${entry.thumbnail} 
         src=https://dummyimage.com/260x130/a1a1a1/2b2b2b.gif /></td><td class=title><a href=${
           entry.link
-        } target="_blank">${entry.title}</td></a><td class=dateStr>${new Date(
-          entry.timestamp
-        ).getUTCFullYear()}-${new Date(entry.timestamp).getUTCMonth()}-${new Date(entry.timestamp).getUTCDate()} ${(
+        } target="_blank">${entry.title}</td></a><td class=dateStr>${new Date(entry.timestamp).getUTCFullYear()}-${(
+          '0' + new Date(entry.timestamp).getMonth()
+        ).slice(-2)}-${('0' + new Date(entry.timestamp).getUTCDate()).slice(-2)} ${(
           '0' + new Date(entry.timestamp).getUTCHours()
         ).slice(-2)}:${('0' + new Date(entry.timestamp).getUTCMinutes()).slice(
           -2
