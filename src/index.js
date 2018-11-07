@@ -94,7 +94,7 @@ class Blizzcle {
       param += key + '=' + encodeURIComponent(data[key]);
     }
     const URL = `${domain}/${this.language}/blog/${type}?${param}&__NO_CACHE__=${+new Date()}`;
-    // console.log(URL);
+
     return fetch(URL)
       .then(r => {
         if (!r.ok) {
@@ -115,7 +115,6 @@ class Blizzcle {
       throw e;
     });
     this.pages.push(...this._parse(page1.html));
-
     this.metadata = {
       totalCount: page1.totalCount,
       game: typeof page1.community == 'undefined' ? 'All' : page1.community.slug,
@@ -147,6 +146,47 @@ class Blizzcle {
 
   _parse(p) {
     const json = [];
+    //Blogs in feature
+    $('.GalleryItem', p).each(function() {
+      const title = $(this)
+        .find('div.TextOverflow')
+        .text()
+        .trim();
+      const thumbnail =
+        'https:' +
+        $(this)
+          .find('div.Card-image')
+          .css('background-image')
+          .replace('url(', '')
+          .replace(')', '')
+          .replace(/\"/gi, '');
+      const description = null;
+      const link = $(this)
+        .find('a.ArticleLink')
+        .attr('href');
+      const timestamp = $(this)
+        .find('span.ArticleListItem-footerTimestamp')
+        .text()
+        .trim();
+      const commentCount = 0;
+      var id = parseInt(
+        $(this)
+          .find('a.ArticleLink')
+          .attr('data-article-id')
+      );
+      json.push({
+        title,
+        thumbnail,
+        description,
+        link: /^https?:\/\//i.test(link) ? link : 'https://news.blizzard.com' + link,
+        timestamp,
+        commentCount: commentCount ? commentCount : 0,
+        id,
+      });
+    });
+
+    // Blogs in list
+
     $('.ArticleListItem', p).each(function() {
       const title = $(this)
         .find('h3.ArticleListItem-title')
