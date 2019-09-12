@@ -15,13 +15,10 @@ A fully, sophisticated, elegent, clean way to access ❄Blizzard Entertainment�
 
 # ❄Installation❄
 
-This package is under npm, just use the command below to install it:
-
- >npm install --save blizzcle
-
-Or install withour dev dependencies:
+This package is under npm, just use the command below to install it via:
 
  >npm install --save --production blizzcle 
+
 
 # ❄Command Line Interface❄
 
@@ -49,6 +46,14 @@ Options:
   --eval <code>        Eval a JS code, "data" as result variable. (default: "console.log(data)")
   -h, --help           output usage information
 ```
+
+# Development
+
+>npm install --save blizzcle
+
+`npm run build`: Compile `./src` into `./dist`.
+`npm run watch`: Run a nodemon for listening file changes and compile `./src` into `./dist`.
+`npm run test`: Run the tests.
 
 # ❄API Documentation❄
 
