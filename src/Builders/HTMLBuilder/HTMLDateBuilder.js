@@ -10,11 +10,11 @@ class HTMLDateBuilder {
   format(str = 'YYYY-MM-DD HH:MM:SS') {
     return str
       .replace('YYYY', this.timestamp.getUTCFullYear())
-      .replace('MM', this._appendZero(this.timestamp.getUTCMonth() + 1))
-      .replace('DD', this._appendZero(this.timestamp.getUTCDate()))
-      .replace('HH', this._appendZero(this.timestamp.getUTCHours()))
-      .replace('MM', this._appendZero(this.timestamp.getUTCMinutes()))
-      .replace('SS', this._appendZero(this.timestamp.getUTCSeconds()));
+      .replace('MM', HTMLDateBuilder._appendZero(this.timestamp.getUTCMonth() + 1))
+      .replace('DD', HTMLDateBuilder._appendZero(this.timestamp.getUTCDate()))
+      .replace('HH', HTMLDateBuilder._appendZero(this.timestamp.getUTCHours()))
+      .replace('MM', HTMLDateBuilder._appendZero(this.timestamp.getUTCMinutes()))
+      .replace('SS', HTMLDateBuilder._appendZero(this.timestamp.getUTCSeconds()));
   }
 
   static _appendZero(num = 1) {

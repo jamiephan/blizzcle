@@ -20,6 +20,7 @@ class HTMLBuilder {
 
   build() {
     this._addHead();
+
     for (let i = 0; i < this.data.length; i++) {
       const entry = this.data[i];
       this._html += `<tr><th scope=row class=hash>${entry.id + 1}</th><td><img class=lazyload data-src=${

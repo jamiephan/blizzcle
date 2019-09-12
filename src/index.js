@@ -53,9 +53,9 @@ class Blizzcle {
     }
 
     if (typeof this.filetype === 'undefined') {
-      if (/\.(json|html?)$/i.test(options.filename)) {
+      if (/\.(json|html?)$/i.test(this.filename)) {
         this.filetype = this.filename.match(/\.(json|html?)$/i)[1].toLowerCase();
-        this._log(`File type detected as ${this.type}`);
+        this._log(`File type detected as "${this.filetype}"`);
       } else {
         this.filetype = 'json';
         this._log('File type not detected, fallback to json.');
@@ -98,7 +98,6 @@ class Blizzcle {
     });
 
     const URL = `${domain}/${this.language}/blog/${type}?${param}&__NO_CACHE__=${+new Date()}`;
-    this._log(URL);
 
     return fetch(URL)
       .then((r) => {
@@ -148,7 +147,7 @@ class Blizzcle {
         }),
       );
     }
-    this._log(`Waiting ${promises.length} request to be completed...`);
+    this._log(`Waiting ${promises.length} requests to be completed...`);
     return Promise.all(promises);
   }
 
