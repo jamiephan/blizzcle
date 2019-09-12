@@ -6,7 +6,7 @@ const Blizzcle = require('./index');
 program
   .version(require('../package.json').version)
   .name('blizzcle')
-  .description('A command line interface tool to gather articles from Blizzard! (either -s or - )')
+  .description('A command line interface tool to gather articles from Blizzard!')
   .option('-v, --verbose', 'Show verbose (debug) message')
   .option('-d, --detail', 'Get the details for all articles (requires more HTTP request).', false)
   .option('-c, --count [n]', 'The maximun count for the articles to be parsed. 0 to be all.', parseInt, 20)
@@ -31,10 +31,7 @@ const blizzcle = new Blizzcle({
 
 if (program.output) {
   blizzcle
-    .save({
-      filename: program.output,
-      type: program.type,
-    })
+    .save()
     // eslint-disable-next-line no-unused-vars
     .then((data) => {
       // eslint-disable-next-line no-eval

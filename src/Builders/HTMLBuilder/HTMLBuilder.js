@@ -44,7 +44,7 @@ class HTMLBuilder {
         },
         (e) => {
           if (e) reject(e);
-          else resolve(`File ${this.filename} created successfully.`);
+          else resolve(this.filename);
         },
       );
     });
