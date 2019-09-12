@@ -36,8 +36,16 @@ The interface for blizzcle is using promise-then architecture:
 
 ## Options
 
-|   |   |   |   |   |
-|---|---|---|---|---|
-|   |   |   |   |   |
-|   |   |   |   |   |
-|   |   |   |   |   |
+| Key name | Type  | Default Value  | Descrption |
+|---|---|---|---|
+| `filename`  |   |   |   |
+| `game`  |   |   |   |
+| `langage`  |   |   |   |
+| `maxCount`  |   |   |   |
+
+    this.verbose = typeof options.verbose === 'undefined' ? false : options.verbose;
+    this.maxCount = typeof options.maxCount === 'undefined' ? 0 : parseInt(options.maxCount);
+    this.filename = typeof options.filename === 'undefined' ? 'blizz' : options.filename;
+    this.game = typeof options.game === 'undefined' ? 'heroes-of-the-storm' : options.game.toLowerCase();
+    this.language = typeof options.language === 'undefined' ? 'en-us' : options.language.toLowerCase();
+  

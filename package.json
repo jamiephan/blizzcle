@@ -4,8 +4,9 @@
   "description": "",
   "main": "./lib/index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "babel src -d lib"
+    "test": "npm run build && mocha --timeout 0 ./test/test.js",
+    "build": "rimraf ./lib/* && babel src -d lib",
+    "watch": "nodemon  --watch src --exec npm run build"
   },
   "author": "Jamie Phan",
   "license": "MIT",
@@ -13,22 +14,27 @@
     "blizzcle": "./lib/cli.js"
   },
   "dependencies": {
-    "cheerio": "^1.0.0-rc.2",
-    "commander": "^2.19.0",
-    "node-fetch": "^2.1.2"
+    "cheerio": "^1.0.0-rc.3",
+    "commander": "^2.20.0",
+    "node-fetch": "^2.6.0"
   },
   "devDependencies": {
-    "@babel/cli": "^7.1.2",
-    "@babel/core": "^7.1.2",
-    "@babel/plugin-transform-regenerator": "^7.0.0",
-    "@babel/plugin-transform-runtime": "^7.1.0",
-    "@babel/polyfill": "^7.0.0",
-    "@babel/preset-env": "^7.1.0",
-    "@babel/runtime": "^7.1.2",
-    "babel-preset-minify": "^0.5.0",
-    "eslint": "^5.8.0",
-    "eslint-config-prettier": "^3.1.0",
-    "eslint-plugin-prettier": "^3.0.0",
-    "prettier": "^1.14.3"
+    "@babel/cli": "^7.6.0",
+    "@babel/core": "^7.6.0",
+    "@babel/plugin-transform-regenerator": "^7.4.5",
+    "@babel/plugin-transform-runtime": "^7.6.0",
+    "@babel/polyfill": "^7.6.0",
+    "@babel/preset-env": "^7.6.0",
+    "@babel/runtime": "^7.6.0",
+    "babel-preset-minify": "^0.5.1",
+    "chai": "^4.2.0",
+    "eslint": "^5.16.0",
+    "eslint-config-airbnb-base": "^14.0.0",
+    "eslint-config-prettier": "^3.6.0",
+    "eslint-plugin-import": "^2.18.2",
+    "eslint-plugin-prettier": "^3.1.0",
+    "mocha": "^5.2.0",
+    "nodemon": "^1.19.2",
+    "prettier": "^1.18.2"
   }
 }

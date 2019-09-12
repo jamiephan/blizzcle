@@ -4,5 +4,7 @@
     "editor.formatOnSave": true,
     "[javascript]": {
         "editor.formatOnSave": false
-    }
+    },
+    "editor.tabSize": 4,
+    "editor.insertSpaces": true
 }
