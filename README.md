@@ -37,12 +37,13 @@ Options:
   -V, --version        output the version number
   -v, --verbose        Show verbose (debug) message
   -d, --detail         Get the details for all articles (requires more HTTP request).
-  -c, --count [n]      The maximun count for the articles to be parsed. 0 to be all. (default: 20)
-  -g, --game [game]    Name of the game. (All for invalid name) (default: "heroes-of-the-storm")
+  -c, --count <n>      The maximun count for the articles to be parsed. 0 to be all. (default: 1)
+  -g, --game <game>    Name of the game. (All for invalid name) (default: "heroes-of-the-storm")
   -o, --output <file>  Set the output file path to be saved to. (Detect .json/.html)
-  -t, --type <type>    Override the output data type from -o. [json | html]
-  --language [lang]    The language of the articles. (default: "en-us")
-  --rawdata            Save the un-parsed data to JSON object (must have -d switch)
+  -t, --type <type>    Override the output data type from -o. (json | html)
+  --language <lang>    The language of the articles. (default: "en-us")
+  --rawdata            Save the un-parsed data to JSON object (must have -d to take effect)
+  --no-color           Do not display colored output (No ANSI Code)
   --eval <code>        Eval a JS code, "data" as result variable. (default: "console.log(data)")
   -h, --help           output usage information
 ```
@@ -66,7 +67,7 @@ The interface for blizzcle is using promise-then architecture:
 
 | Key name | Type  | Default Value  | Descrption |
 |---|---|---|---|
-`count` | `Number` | `0` | Set the number of articles to be fetched (0 to be all) |
+`count` | `Number` | `1` | Set the number of articles to be fetched (0 to be all) |
 `detail` | `Boolean` | `false` | Set whether to fetch the details of each article, will greatly increase internet bandwidth |
 `filename` | `String` | `undefined` | Set the filename to be stored |
 `filetype` | `String` | `undefined` | Set the filetype to be stored (`json` or `html`), this will override the detection in `filename` |
@@ -99,3 +100,7 @@ blizzcle.save()
   });
 // Created wow.html
 ```
+
+# ❄License❄
+
+This project is licensed under the terms of the Apache license, Version 2.0.

@@ -14,7 +14,7 @@ program
   .option('-o, --output <file>', 'Set the output file path to be saved to. (Detect .json/.html)')
   .option('-t, --type <type>', 'Override the output data type from -o. (json | html)')
   .option('--language <lang>', 'The language of the articles.', 'en-us')
-  .option('--rawdata', 'Save the un-parsed data to JSON object (must have -d switch)', false)
+  .option('--rawdata', 'Save the un-parsed data to JSON object (must have -d to take effect)', false)
   .option('--no-color', 'Do not display colored output (No ANSI Code)', false)
   .option('--eval <code>', 'Eval a JS code, "data" as result variable.', 'console.log(data)')
   .parse(process.argv);

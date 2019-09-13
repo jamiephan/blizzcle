@@ -1,7 +1,7 @@
 {
   "name": "blizzcle",
-  "version": "1.0.1",
-  "description": "",
+  "version": "1.0.2",
+  "description": "❄A module to gather articles from Blizzard❄",
   "main": "./dist/index.js",
   "scripts": {
     "test": "npm run build && mocha --timeout 0 ./test/test.js",
@@ -9,7 +9,13 @@
     "watch": "nodemon  --watch src --exec npm run build"
   },
   "author": "Jamie Phan",
-  "license": "MIT",
+  "license": "Apache-2.0",
+  "licenses": [
+    {
+      "type": "Apache-2.0",
+      "url": "http://www.apache.org/licenses/LICENSE-2.0"
+    }
+  ],
   "bin": {
     "blizzcle": "./dist/cli.js"
   },
