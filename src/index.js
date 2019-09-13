@@ -194,7 +194,7 @@ class Blizzcle {
       });
     });
 
-    // Blogs in list
+    // Blogs in list 
 
     $('.ArticleListItem', p).each(function parseArticle() {
       const title = $(this)
