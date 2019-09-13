@@ -2,23 +2,33 @@
 const fetch = require('node-fetch');
 const $ = require('cheerio');
 
-const { HTMLBuilder } = require('./Builders');
-const { JSONBuilder } = require('./Builders');
+const { HTMLBuilder, JSONBuilder } = require('./Builders');
+const { Logger, LoggerVerbosity } = require('./Loggers');
+const defaultify = require('./defaultify');
+
+const logger = new Logger();
 
 // TODO: ADD split request so prevent gatway error | start fron nth post
 
 class Blizzcle {
   constructor(options = {}) {
-    this.verbose = typeof options.verbose === 'undefined' ? false : options.verbose;
-    this.count = typeof options.count === 'undefined' ? 0 : parseInt(options.count, 10);
-    this.detail = typeof options.detail === 'undefined' ? false : options.detail;
-    this.filename = typeof options.filename === 'undefined' ? undefined : options.filename;
-    this.filetype = typeof options.filetype === 'undefined' ? undefined : options.filetype;
-    this.game = typeof options.game === 'undefined' ? 'heroes-of-the-storm' : options.game.toLowerCase();
-    this.language = typeof options.language === 'undefined' ? 'en-us' : options.language.toLowerCase();
-    this.rawdata = typeof options.rawdata === 'undefined' ? false : options.rawdata;
+    // Init Options
 
-    this._log(
+    this.verbose = defaultify(options.verbose, false);
+    this.count = defaultify(options.count, 1);
+    this.detail = defaultify(options.detail, false);
+    this.filename = defaultify(options.filename, undefined);
+    this.filetype = defaultify(options.filetype, undefined);
+    this.game = defaultify(options.game.toLowerCase(), 'heroes-of-the-storm');
+    this.language = defaultify(options.language.toLowerCase(), 'en-us');
+    this.rawdata = defaultify(options.rawdata, false);
+    this.color = defaultify(options.color, true);
+    // Init Logger
+    logger.set(console.log, this.color,
+      this.verbose ? LoggerVerbosity.verbose : LoggerVerbosity.minimal);
+
+    // Debug log all settings
+    logger.debug(`Settings: ${
       JSON.stringify({
         verbose: this.verbose,
         count: this.count,
@@ -28,8 +38,8 @@ class Blizzcle {
         game: this.game,
         language: this.language,
         rawdata: this.rawdata,
-      }),
-    );
+        color: this.color,
+      })}`);
   }
 
   async get() {
@@ -39,6 +49,8 @@ class Blizzcle {
       });
     }).catch((e) => { throw e; });
 
+    this.pages.sort((x, y) => y.id - x.id);
+
     this.pages = this.count === 0 ? this.pages : this.pages.slice(0, this.count);
     if (this.detail || this.filename !== undefined) {
       await this._detailtify().catch((e) => { throw e; });
@@ -46,19 +58,20 @@ class Blizzcle {
     return this.pages;
   }
 
-  async save(options = {}) {
+  async save() {
     // Check File Name
     if (typeof this.filename === 'undefined') {
+      logger.error('filename is not defined');
       throw new Error('filename is not defined');
     }
 
     if (typeof this.filetype === 'undefined') {
       if (/\.(json|html?)$/i.test(this.filename)) {
         this.filetype = this.filename.match(/\.(json|html?)$/i)[1].toLowerCase();
-        this._log(`File type detected as "${this.filetype}"`);
+        logger.debug(`File type detected as "${this.filetype}"`);
       } else {
         this.filetype = 'json';
-        this._log('File type not detected, fallback to json.');
+        logger.warn('File type not detected, fallback to json.');
       }
     }
 
@@ -83,7 +96,7 @@ class Blizzcle {
       HTMLFile.build();
       return HTMLFile.save();
     }
-    console.log(this.filetype);
+    logger.error('Unable to save file');
     throw new Error('Unable to save file');
   }
 
@@ -114,7 +127,7 @@ class Blizzcle {
   async _getPages() {
     this.pages = [];
     const promises = [];
-    this._log('Downloading Page 1 for metadata and its content.');
+    logger.debug('Downloading Page 1 for metadata and its content.');
     const page1 = await this._download('list', {
       pageNum: 1,
       community: this.game,
@@ -128,17 +141,19 @@ class Blizzcle {
     };
 
     let articleCount = this.metadata.totalCount;
-    this._log(`Community name : ${this.metadata.game}`);
-    this._log(`Total article count in "${this.metadata.game}": ${this.metadata.totalCount}`);
+
+    logger.debug(`Community name : ${this.metadata.game}`);
+    logger.debug(`Total article count in "${this.metadata.game}": ${this.metadata.totalCount}`);
+
     if (this.count !== 0) {
       articleCount = this.count;
-      this._log(`Number of articles will be extracted: ${articleCount}`);
+      logger.debug(`Number of articles will be extracted: ${articleCount}`);
     }
     const pagesToFetch = Math.ceil((articleCount - 30) / 30);
-    this._log(`Number of extra pages to be fetched: ${pagesToFetch}`);
+    logger.debug(`Number of extra pages to be fetched: ${pagesToFetch}`);
 
     for (let i = 0; i < pagesToFetch; i++) {
-      this._log(`Fetching extra page: ${i + 1} / ${pagesToFetch} ...`);
+      logger.debug(`Fetching extra page: ${i + 1} / ${pagesToFetch} ...`);
 
       promises.push(
         this._download('list', {
@@ -147,7 +162,7 @@ class Blizzcle {
         }),
       );
     }
-    this._log(`Waiting ${promises.length} requests to be completed...`);
+    logger.debug(`Waiting ${promises.length} requests to be completed...`);
     return Promise.all(promises);
   }
 
@@ -194,7 +209,7 @@ class Blizzcle {
       });
     });
 
-    // Blogs in list 
+    // Blogs in list
 
     $('.ArticleListItem', p).each(function parseArticle() {
       const title = $(this)
@@ -246,11 +261,11 @@ class Blizzcle {
   }
 
   async _detailtify() {
-    this._log('Downloading details to each post');
+    logger.debug('Downloading details to each post');
     const promises = [];
     for (let i = 0; i < this.pages.length; i++) {
       const post = this.pages[i];
-      this._log(`Fetching Details of the post ${post.id} (${post.title})`);
+      logger.debug(`Fetching Details of the post ${post.id} (${post.title})`);
       promises.push(
         this._download('detail', {
           blogId: post.id,
@@ -259,7 +274,7 @@ class Blizzcle {
       );
     }
 
-    this._log(`Waiting ${promises.length} request to be completed...`);
+    logger.debug(`Waiting ${promises.length} request to be completed...`);
     const details = await Promise.all(promises).catch((e) => { throw e; });
     for (let i = 0; i < details.length; i++) {
       const detail = details[i];
@@ -277,11 +292,11 @@ class Blizzcle {
     }
   }
 
-  _log(message) {
-    if (this.verbose) {
-      console.log(`[${+Date.now()}] ${message}`);
-    }
-  }
+  // _log(message) {
+  //   if (this.verbose) {
+  //     console.log(`[${+Date.now()}] ${message}`);
+  //   }
+  // }
 }
 
 module.exports = Blizzcle;

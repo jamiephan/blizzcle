@@ -9,12 +9,13 @@ program
   .description('A command line interface tool to gather articles from Blizzard!')
   .option('-v, --verbose', 'Show verbose (debug) message')
   .option('-d, --detail', 'Get the details for all articles (requires more HTTP request).', false)
-  .option('-c, --count [n]', 'The maximun count for the articles to be parsed. 0 to be all.', parseInt, 20)
-  .option('-g, --game [game]', 'Name of the game. (All for invalid name)', 'heroes-of-the-storm')
+  .option('-c, --count <n>', 'The maximun count for the articles to be parsed. 0 to be all.', (p) => parseInt(p, 10), 1)
+  .option('-g, --game <game>', 'Name of the game. (All for invalid name)', 'heroes-of-the-storm')
   .option('-o, --output <file>', 'Set the output file path to be saved to. (Detect .json/.html)')
-  .option('-t, --type <type>', 'Override the output data type from -o. [json | html]')
-  .option('--language [lang]', 'The language of the articles.', 'en-us')
+  .option('-t, --type <type>', 'Override the output data type from -o. (json | html)')
+  .option('--language <lang>', 'The language of the articles.', 'en-us')
   .option('--rawdata', 'Save the un-parsed data to JSON object (must have -d switch)', false)
+  .option('--no-color', 'Do not display colored output (No ANSI Code)', false)
   .option('--eval <code>', 'Eval a JS code, "data" as result variable.', 'console.log(data)')
   .parse(process.argv);
 
@@ -27,6 +28,7 @@ const blizzcle = new Blizzcle({
   language: program.language,
   detail: program.detail,
   rawdata: program.rawdata,
+  color: program.color,
 });
 
 if (program.output) {
