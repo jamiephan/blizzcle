@@ -90,7 +90,7 @@ class LoggerColors {
   }
 
   /**
-   * Convert string into ANSI ReBright d colored code
+   * Convert string into ANSI Red Bright colored code
    * @param {String} str String to be converted into ANSI colored string
    */
   static BrightRed(str) {
@@ -100,7 +100,7 @@ class LoggerColors {
   }
 
   /**
-   * Convert string into ANSI GrBright een colored code
+   * Convert string into ANSI Green Bright colored code
    * @param {String} str String to be converted into ANSI colored string
    */
   static BrightGreen(str) {
@@ -110,7 +110,7 @@ class LoggerColors {
   }
 
   /**
-   * Convert string into ANSI YeBright llow colored code
+   * Convert string into ANSI Yellow Bright colored code
    * @param {String} str String to be converted into ANSI colored string
    */
   static BrightYellow(str) {
@@ -120,7 +120,7 @@ class LoggerColors {
   }
 
   /**
-   * Convert string into ANSI BlBright ue colored code
+   * Convert string into ANSI Blue Bright colored code
    * @param {String} str String to be converted into ANSI colored string
    */
   static BrightBlue(str) {
@@ -130,7 +130,7 @@ class LoggerColors {
   }
 
   /**
-   * Convert string into ANSI MaBright genta colored code
+   * Convert string into ANSI Magenta Bright colored code
    * @param {String} str String to be converted into ANSI colored string
    */
   static BrightMagenta(str) {
@@ -140,7 +140,7 @@ class LoggerColors {
   }
 
   /**
-   * Convert string into ANSI CyBright an colored code
+   * Convert string into ANSI Cyan Bright colored code
    * @param {String} str String to be converted into ANSI colored string
    */
   static BrightCyan(str) {
@@ -150,13 +150,25 @@ class LoggerColors {
   }
 
   /**
-   * Convert string into ANSI WhBright ite colored code
+   * Convert string into ANSI White Bright colored code
    * @param {String} str String to be converted into ANSI colored string
    */
   static BrightWhite(str) {
     const color = '\x1b[97m';
     const reset = '\x1b[0m';
     return color + str + reset;
+  }
+
+  /**
+   * Convert string into ANSI Custom RGB colored code
+   * @param {String} str String to be converted into ANSI colored string
+   * @param {Number} r Value of Red
+   * @param {Number} g Value of Green
+   * @param {Number} b Value of Blue
+   */
+  static RGB(str, r, g, b) {
+    const reset = '\x1b[0m';
+    return `\x1b[38;2;${r};${g};${b}m${str}${reset}`;
   }
 }
 
