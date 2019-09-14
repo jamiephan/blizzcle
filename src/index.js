@@ -4,7 +4,7 @@ const $ = require('cheerio');
 
 const { HTMLBuilder, JSONBuilder } = require('./Builders');
 const { Logger, LoggerVerbosity } = require('./Loggers');
-const defaultify = require('./defaultify');
+const { defaultify } = require('./Helpers');
 
 const logger = new Logger();
 
@@ -13,7 +13,6 @@ const logger = new Logger();
 class Blizzcle {
   constructor(options = {}) {
     // Init Options
-
     this.verbose = defaultify(options.verbose, false);
     this.count = defaultify(options.count, 1);
     this.detail = defaultify(options.detail, false);
@@ -291,12 +290,6 @@ class Blizzcle {
       }
     }
   }
-
-  // _log(message) {
-  //   if (this.verbose) {
-  //     console.log(`[${+Date.now()}] ${message}`);
-  //   }
-  // }
 }
 
 module.exports = Blizzcle;
