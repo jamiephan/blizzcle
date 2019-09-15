@@ -5,13 +5,7 @@
     ██████╔╝███████╗██║███████╗███████╗╚██████╗███████╗███████╗
     ╚═════╝ ╚══════╝╚═╝╚══════╝╚══════╝ ╚═════╝╚══════╝╚══════╝
 
-A fully, sophisticated, elegent, clean way to access ❄Blizzard Entertainment❄ articles.
-
-# ❄Prerequisite❄
-
-- Nodejs `(>=8)`
-
-- Active Internet connection
+A fully-functional, sophisticated, elegant and clean way to access ❄Blizzard Entertainment❄ articles.
 
 # ❄Installation❄
 
@@ -52,9 +46,9 @@ Options:
 
 >npm install --save blizzcle
 
-`npm run build`: Compile `./src` into `./dist`.
-`npm run watch`: Run a nodemon for listening file changes and compile `./src` into `./dist`.
-`npm run test`: Run the tests.
+- `npm run build`: Compile `./src` into `./dist`.
+- `npm run watch`: Run a nodemon for listening file changes and compile `./src` into `./dist`.
+- `npm run test`: Run the tests.
 
 # ❄API Documentation❄
 
