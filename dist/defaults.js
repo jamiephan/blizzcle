@@ -1,0 +1,1 @@
+"use strict";var defaults={verbose:!1,count:1,detail:!1,filename:void 0,filetype:void 0,game:"heroes-of-the-storm",language:"en-us",rawdata:!1,color:!0};module.exports=defaults;

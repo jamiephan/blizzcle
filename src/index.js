@@ -1,10 +1,10 @@
-
 const fetch = require('node-fetch');
 const $ = require('cheerio');
 
 const { HTMLBuilder, JSONBuilder } = require('./Builders');
 const { Logger, LoggerVerbosity } = require('./Loggers');
-const { defaultify } = require('./Helpers');
+const { defaultifyObject } = require('./Helpers').defaultify;
+const defaults = require('./defaults');
 
 const logger = new Logger();
 
@@ -13,32 +13,14 @@ const logger = new Logger();
 class Blizzcle {
   constructor(options = {}) {
     // Init Options
-    this.verbose = defaultify(options.verbose, false);
-    this.count = defaultify(options.count, 1);
-    this.detail = defaultify(options.detail, false);
-    this.filename = defaultify(options.filename, undefined);
-    this.filetype = defaultify(options.filetype, undefined);
-    this.game = defaultify(options.game.toLowerCase(), 'heroes-of-the-storm');
-    this.language = defaultify(options.language.toLowerCase(), 'en-us');
-    this.rawdata = defaultify(options.rawdata, false);
-    this.color = defaultify(options.color, true);
+    this.options = defaultifyObject(options, defaults);
+
     // Init Logger
-    logger.set(console.log, this.color,
-      this.verbose ? LoggerVerbosity.verbose : LoggerVerbosity.minimal);
+    logger.set(console.log, this.options.color,
+      this.options.verbose ? LoggerVerbosity.verbose : LoggerVerbosity.minimal);
 
     // Debug log all settings
-    logger.debug(`Settings: ${
-      JSON.stringify({
-        verbose: this.verbose,
-        count: this.count,
-        detail: this.detail,
-        filename: this.filename,
-        filetype: this.filetype,
-        game: this.game,
-        language: this.language,
-        rawdata: this.rawdata,
-        color: this.color,
-      })}`);
+    logger.debug(`Settings: ${JSON.stringify(this.options)}`);
   }
 
   async get() {
@@ -50,8 +32,8 @@ class Blizzcle {
 
     this.pages.sort((x, y) => y.id - x.id);
 
-    this.pages = this.count === 0 ? this.pages : this.pages.slice(0, this.count);
-    if (this.detail || this.filename !== undefined) {
+    this.pages = this.options.count === 0 ? this.pages : this.pages.slice(0, this.options.count);
+    if (this.options.detail || this.options.filename !== undefined) {
       await this._detailtify().catch((e) => { throw e; });
     }
     return this.pages;
@@ -59,17 +41,17 @@ class Blizzcle {
 
   async save() {
     // Check File Name
-    if (typeof this.filename === 'undefined') {
+    if (typeof this.options.filename === 'undefined') {
       logger.error('filename is not defined');
       throw new Error('filename is not defined');
     }
 
-    if (typeof this.filetype === 'undefined') {
-      if (/\.(json|html?)$/i.test(this.filename)) {
-        this.filetype = this.filename.match(/\.(json|html?)$/i)[1].toLowerCase();
-        logger.debug(`File type detected as "${this.filetype}"`);
+    if (typeof this.options.filetype === 'undefined') {
+      if (/\.(json|html?)$/i.test(this.options.filename)) {
+        this.options.filetype = this.options.filename.match(/\.(json|html?)$/i)[1].toLowerCase();
+        logger.debug(`File type detected as "${this.options.filetype}"`);
       } else {
-        this.filetype = 'json';
+        this.options.filetype = 'json';
         logger.warn('File type not detected, fallback to json.');
       }
     }
@@ -83,15 +65,15 @@ class Blizzcle {
     data = data.sort((a, b) => a.id - b.id);
 
     // Save As JSON
-    if (this.filetype.toLowerCase() === 'json') {
-      const JSONFile = new JSONBuilder(data, this.game, this.filename);
+    if (this.options.filetype.toLowerCase() === 'json') {
+      const JSONFile = new JSONBuilder(data, this.options.game, this.options.filename);
       JSONFile.build();
       return JSONFile.save();
     }
 
     // Save as HTML
-    if (this.filetype.toLowerCase() === 'html') {
-      const HTMLFile = new HTMLBuilder(data, this.game, this.filename);
+    if (this.options.filetype.toLowerCase() === 'html') {
+      const HTMLFile = new HTMLBuilder(data, this.options.game, this.options.filename);
       HTMLFile.build();
       return HTMLFile.save();
     }
@@ -109,7 +91,8 @@ class Blizzcle {
       param += `${x[0]}=${x[1]}`;
     });
 
-    const URL = `${domain}/${this.language}/blog/${type}?${param}&__NO_CACHE__=${+new Date()}`;
+    const URL = `${domain}/${this.options.language}/blog/${type}?${param}&__NO_CACHE__=${+new Date()}`;
+    logger.debug(URL);
 
     return fetch(URL)
       .then((r) => {
@@ -129,7 +112,7 @@ class Blizzcle {
     logger.debug('Downloading Page 1 for metadata and its content.');
     const page1 = await this._download('list', {
       pageNum: 1,
-      community: this.game,
+      community: this.options.game,
     }).catch((e) => {
       throw e;
     });
@@ -144,8 +127,8 @@ class Blizzcle {
     logger.debug(`Community name : ${this.metadata.game}`);
     logger.debug(`Total article count in "${this.metadata.game}": ${this.metadata.totalCount}`);
 
-    if (this.count !== 0) {
-      articleCount = this.count;
+    if (this.options.count !== 0) {
+      articleCount = this.options.count;
       logger.debug(`Number of articles will be extracted: ${articleCount}`);
     }
     const pagesToFetch = Math.ceil((articleCount - 30) / 30);
@@ -157,7 +140,7 @@ class Blizzcle {
       promises.push(
         this._download('list', {
           pageNum: i + 2,
-          community: this.game,
+          community: this.options.game,
         }),
       );
     }
@@ -285,7 +268,7 @@ class Blizzcle {
       this.pages[i].timestamp = timestamp;
       this.pages[i].bodyHTML = body.html().trim();
       this.pages[i].body = body.text().trim();
-      if (this.rawdata) {
+      if (this.options.rawdata) {
         this.pages[i]._rawData = details;
       }
     }

@@ -1,1 +1,1 @@
-"use strict";var defaultify=function(a,b){return""===a?b:void 0===a?b:null===a?b:0>parseInt(a,10)?b:"undefined"==typeof a?b:a};module.exports=defaultify;
+"use strict";var defaultifyValue=function(a,b){return""===a?b:void 0===a?b:null===a?b:0>parseInt(a,10)?b:"undefined"==typeof a?b:a},defaultifyObject=function(a,b){var c={};return Object.entries(b).forEach(function(b){var d=b[0],e=b[1];c[d]=Object.prototype.hasOwnProperty.call(a,d)?defaultifyValue(a[d],e):e}),c};module.exports.defaultifyValue=defaultifyValue,module.exports.defaultifyObject=defaultifyObject;
